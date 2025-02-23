@@ -1,0 +1,33 @@
+{
+  "name": "@node-projects/propertygrid.webcomponent",
+  "version": "1.0.0",
+  "description": "a propertygrid webcomponent.",
+  "type": "module",
+  "main": "./dist/PropertyGrid.js",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/@node-projects/propertygrid.webcomponent.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/@node-projects/propertygrid.webcomponent/issues"
+  },
+  "homepage": "https://github.com/@node-projects/propertygrid.webcomponent#readme",
+  "scripts": {
+    "tsc": "tsc",
+    "start": "web-dev-server --node-resolve --open sample/index.html",
+    "build": "tsc",
+    "release": "release-it"
+  },
+  "customElements": "custom-elements.json",
+  "devDependencies": {
+    "@web/dev-server": "^0.4.6",
+    "release-it": "^18.1.2",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "@node-projects/base-custom-webcomponent": "^0.29.0"
+  }
+}

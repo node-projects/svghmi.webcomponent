@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+	xmlns="http://www.w3.org/2000/svg"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:hmi-bind--xlink="http://svg.siemens.com/hmi/bind/xlink/"
+	xmlns:hmi="http://svg.siemens.com/hmi/"
+	xmlns:hmi-bind="http://svg.siemens.com/hmi/bind/"
+	xmlns:hmi-element="http://svg.siemens.com/hmi/element/"
+	xmlns:hmi-feature="http://svg.siemens.com/hmi/feature/"
+	xmlns:hmi-event="http://svg.siemens.com/hmi/event/"
+     viewBox="0 0 49.136913 49.136902"
+     preserveAspectRatio="none"
+     height="185.71428"
+     width="185.71432">
+	<hmi:self type="widget" displayName="Testing" name="extended.Testing" version="1.0" performanceClass="L">
+		<hmi:paramDef name="FarbeKreis" type="HmiColor"  default="0xFF000000"  />
+		<hmi:paramDef name="FarbeRechteck" type="HmiColor"  default="0xFF000000"  />
+	</hmi:self>
+	<defs
+     id="defs2" />
+	<g
+     transform="translate(-27.970234,-33.92857)"
+     id="layer1">
+		<circle
+       r="21.544643"
+       cy="55.473213"
+       cx="49.514877"
+       id="path815"
+       style="opacity:1;stroke-width:0.26458332;fill:#ff0000"
+       hmi-bind:fill="{{Converter.RGBA(ParamProps.FarbeKreis)}}"       />
+		<rect
+       y="52.827377"
+       x="46.869053"
+       height="30.238094"
+       width="30.238094"
+       id="rect817"
+       style="opacity:1;fill:#00ff00;stroke-width:0.26458332"
+       hmi-bind:fill="{{Converter.RGBA(ParamProps.FarbeRechteck)}}"       />
+	</g>
+</svg>

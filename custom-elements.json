@@ -1,0 +1,46 @@
+{
+    "schemaVersion": "1.0.0",
+    "readme": "README.md",
+    "modules": [
+        {
+            "kind": "javascript-module",
+            "path": "dist/SvgHmi.js",
+            "declarations": [
+                {
+                    "kind": "class",
+                    "name": "SvgHmi",
+                    "members": [
+                        {
+                            "kind": "field",
+                            "name": "src",
+                            "type":  {
+                                "text": "string"
+                            }
+                        }
+                    ],
+                    "attributes": [
+                        {
+                            "name": "src",
+                            "fieldName": "src"
+                        }
+                    ],
+                    "superclass": {
+                        "name": "BaseCustomWebComponentConstructorAppend"
+                    },
+                    "tagName": "node-projects-svghmi",
+                    "customElement": true
+                }
+            ],
+            "exports": [
+                {
+                    "kind": "custom-element-definition",
+                    "name": "node-projects-svghmi",
+                    "declaration": {
+                        "name": "SvgHmi",
+                        "module": "dist/SvgHmi.js"
+                    }
+                }
+            ]
+        }
+    ]
+}

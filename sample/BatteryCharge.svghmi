@@ -1,0 +1,32 @@
+<!DOCTYPE svg PUBLIC "-//SIEMENS//DTD SVG 1.0 TIA-HMI//EN" "http://tia.siemens.com/graphics/svg/1.4/dtd/svg14-hmi.dtd">
+<!-- SIMATIC WINCC Copyright (C) Siemens AG 2021. All Rights Reserved. -->
+
+<svg
+	xmlns="http://www.w3.org/2000/svg"
+	xmlns:hmi="http://svg.siemens.com/hmi/"
+	xmlns:hmi-bind="http://svg.siemens.com/hmi/bind/"
+     viewBox="0 0 57.213 22.455"
+     preserveAspectRatio="none">
+	 
+	<hmi:self type="widget" displayName="BatteryCharge" name="extended.BatteryCharge" version="1.0" performanceClass="L">
+		<hmi:paramDef name="ChargeBarColor"  	type="HmiColor"		default="0xFF00FF00" />
+		<hmi:paramDef name="MinRange"     		type="number"    	default="0"/>
+		<hmi:paramDef name="MaxRange"     		type="number"    	default="100"/>
+		<hmi:paramDef name="Value"  			type="number"    	default="100"/>
+		<hmi:paramDef name="TextUnit"      		type="string"  		default="%"  />
+  </hmi:self>
+
+  <defs>
+		<hmi:localDef name="NormalizedValue" type="number" 	hmi-bind:value="{{Converter.Bounds((ParamProps.Value-ParamProps.MinRange)/(ParamProps.MaxRange-ParamProps.MinRange), 0.0, 1.0) }}" />
+  </defs> 
+
+ <g id="layer1" transform="translate(-.0054868 -.26733)">
+  <g id="Battery" stroke-width=".26458">
+   <rect id="BatteryBody" x=".0054868" y=".26733" width="50.792" height="22.455"/>
+   <rect id="Terminal" x="51.338" y="5.0792" width="5.8812" height="12.564"/>  
+   <rect id="ChargeBar" x="2.4059" y="3.2079" hmi-bind:width="LocalProps.NormalizedValue*46" height="16.574" hmi-bind:fill="{{Converter.RGBA(ParamProps.ChargeBarColor)}}" />
+   <text x ="26" y="16" fill="#6D6D6D" font-family="Arial" font-size="8" text-anchor="middle"><hmi:text hmi-bind:value="{{ Converter.FormatPattern( ParamProps.Value, '{I}' ) }}" /></text>
+   <text x ="38" y="16" fill="#6D6D6D" font-family="Arial" font-size="8" text-anchor="middle"><hmi:text hmi-bind:value="{{ParamProps.TextUnit}}" /></text>
+   </g>
+ </g>
+</svg>
