@@ -1,20 +1,20 @@
 {
-  "name": "@node-projects/propertygrid.webcomponent",
-  "version": "1.0.0",
-  "description": "a propertygrid webcomponent.",
+  "name": "@node-projects/svghmi.webcomponent",
+  "version": "0.0.1",
+  "description": "a svghmi webcomponent.",
   "type": "module",
-  "main": "./dist/PropertyGrid.js",
+  "main": "./dist/index.js",
   "private": false,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/@node-projects/propertygrid.webcomponent.git"
+    "url": "git+https://github.com/@node-projects/svghmi.webcomponent.git"
   },
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/@node-projects/propertygrid.webcomponent/issues"
+    "url": "https://github.com/@node-projects/svghmi.webcomponent/issues"
   },
-  "homepage": "https://github.com/@node-projects/propertygrid.webcomponent#readme",
+  "homepage": "https://github.com/@node-projects/svghmi.webcomponent#readme",
   "scripts": {
     "tsc": "tsc",
     "start": "web-dev-server --node-resolve --open sample/index.html",
