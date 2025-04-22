@@ -1,6 +1,6 @@
 {
   "name": "@node-projects/svghmi.webcomponent",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "a svghmi webcomponent.",
   "type": "module",
   "main": "./dist/index.js",
@@ -22,7 +22,7 @@
   },
   "customElements": "custom-elements.json",
   "devDependencies": {
-    "@node-projects/web-component-designer": "^0.1.254",
+    "@node-projects/web-component-designer": "^0.1.255",
     "@web/dev-server": "^0.4.6",
     "typescript": "^5.8.3"
   },

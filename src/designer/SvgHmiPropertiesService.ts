@@ -1,9 +1,13 @@
-import { AbstractPolymerLikePropertiesService, IDesignItem, IProperty, IPropertyGroup, PropertyType } from "@node-projects/web-component-designer";
+import { AbstractPolymerLikePropertiesService, IDesignItem, IProperty, IPropertyGroup, PropertyType, RefreshMode } from "@node-projects/web-component-designer";
 import { SvgHmi } from "../SvgHmi.js";
 
 export default class SvgHmiPropertiesService extends AbstractPolymerLikePropertiesService {
   override isHandledElement(designItem: IDesignItem): boolean {
     return designItem.element instanceof SvgHmi;
+  }
+
+  override getRefreshMode(designItem: IDesignItem): RefreshMode {
+    return RefreshMode.fullOnValueChange;
   }
 
   public override async getProperties(designItem: IDesignItem): Promise<IProperty[] | IPropertyGroup[]> {

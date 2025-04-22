@@ -26,7 +26,8 @@
        cy="55.473213"
        cx="49.514877"
        id="path815"
-       style="opacity:1;stroke-width:0.26458332;fill:#ff0000"
+       fill="#ff0000"
+       style="opacity:1;stroke-width:0.26458332;"
        hmi-bind:fill="{{Converter.RGBA(ParamProps.FarbeKreis)}}"       />
 		<rect
        y="52.827377"
@@ -34,7 +35,8 @@
        height="30.238094"
        width="30.238094"
        id="rect817"
-       style="opacity:1;fill:#00ff00;stroke-width:0.26458332"
+       fill="#00ff00"
+       style="opacity:1;stroke-width:0.26458332"
        hmi-bind:fill="{{Converter.RGBA(ParamProps.FarbeRechteck)}}"       />
 	</g>
 </svg>

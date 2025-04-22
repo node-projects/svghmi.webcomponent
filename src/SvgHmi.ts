@@ -151,8 +151,8 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
             } else {
                 const val = evalWithContext(this, b.value);
                 b.element.setAttribute(b.attribute, val);
-                if (b.element instanceof SVGElement)
-                    b.element.style[b.attribute] = val;
+                //if (b.element instanceof SVGElement)
+                //    b.element.style[b.attribute] = val;
             }
         }
     }
