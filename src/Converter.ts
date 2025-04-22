@@ -66,7 +66,7 @@ export class Converter {
     }
 
     static Alpha(col: string) {
-        return col.substring(2,2);
+        return col.substring(2, 4);
     }
 
     static Iluminate(input: string, deviation: number, low = '#FFFFFF', high = '#000000') {

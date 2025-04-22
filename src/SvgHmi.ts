@@ -20,7 +20,7 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
 
     public _svgHmiProperties: Map<string, { name: string, type: string, default: string }> = new Map();
     public _svgHmiLocalDefs: Map<string, { name: string, type: string, value: string }> = new Map();
-    private _boundAttributes: { element: Element, attribute: string, value: string }[] = [];
+    private _boundAttributes: { element: Element, elementParent?: Element, attribute: string, value: string }[] = [];
 
     #src: string;
     set src(value: string) {
@@ -148,6 +148,11 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
         for (let b of this._boundAttributes) {
             if (b.element.localName == "localDef") {
                 this._svgHmiLocalDefs.get(b.element.getAttribute('name')).value = evalWithContext(this, b.value);
+            } else if (b.element.localName == "text" && b.element.namespaceURI == "http://svg.siemens.com/hmi/") {
+                const par = b.elementParent ?? b.element.parentNode;
+                b.elementParent = <Element>par;
+                par.textContent = evalWithContext(this, b.value);
+                //this._svgHmiLocalDefs.get(b.element.getAttribute('name')).value = evalWithContext(this, b.value);
             } else {
                 const val = evalWithContext(this, b.value);
                 b.element.setAttribute(b.attribute, val);
