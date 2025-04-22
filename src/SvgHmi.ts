@@ -71,7 +71,7 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
                     continue;
 
                 let name = n.getAttribute('name');
-                let nm = name.toLocaleLowerCase(); //TODO, lowercase Name should be snake cased!
+                let nm = SvgHmi.camelToDashCase(name);
                 let tp = n.getAttribute('type');
                 let d = n.getAttribute('default');
                 this._svgHmiProperties.set(nm, { name: name, type: tp, default: d });
@@ -126,6 +126,10 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
         }
     }
 
+    public static camelToDashCase(text: string) {
+        return text[0].toLowerCase() + text.substring(1).replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`);
+    }
+
     /*private parseValue(value: string, type: string) {
         switch (type) {
             case "HmiColor": {
@@ -135,7 +139,7 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
 
         return value;
     }*/
-   
+
     protected override _parseAttributesToProperties(noBindings?: boolean): void {
         super._parseAttributesToProperties();
     }

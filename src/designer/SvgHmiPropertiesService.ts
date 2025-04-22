@@ -1,5 +1,4 @@
-import { IDesignItem, IProperty, IPropertyGroup, PropertyType } from "@node-projects/web-component-designer";
-import { AbstractPolymerLikePropertiesService } from "@node-projects/web-component-designer/dist/elements/services/propertiesService/services/AbstractPolymerLikePropertiesService.js";
+import { AbstractPolymerLikePropertiesService, IDesignItem, IProperty, IPropertyGroup, PropertyType } from "@node-projects/web-component-designer";
 import { SvgHmi } from "../SvgHmi.js";
 
 export default class AttachedPropertiesService extends AbstractPolymerLikePropertiesService {
