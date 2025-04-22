@@ -10,7 +10,6 @@ export default class AttachedPropertiesService extends AbstractPolymerLikeProper
   public override async getProperties(designItem: IDesignItem): Promise<IProperty[] | IPropertyGroup[]> {
     return Array.from((<SvgHmi>designItem.element)._svgHmiProperties.entries().map(x => ({
       name: x[1].name,
-      propertyName: x[0],
       type: x[1].type,
       service: this,
       propertyType: PropertyType.propertyAndAttribute
