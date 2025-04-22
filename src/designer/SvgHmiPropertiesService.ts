@@ -1,7 +1,7 @@
 import { AbstractPolymerLikePropertiesService, IDesignItem, IProperty, IPropertyGroup, PropertyType } from "@node-projects/web-component-designer";
 import { SvgHmi } from "../SvgHmi.js";
 
-export default class AttachedPropertiesService extends AbstractPolymerLikePropertiesService {
+export default class SvgHmiPropertiesService extends AbstractPolymerLikePropertiesService {
   override isHandledElement(designItem: IDesignItem): boolean {
     return designItem.element instanceof SvgHmi;
   }
