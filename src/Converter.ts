@@ -41,35 +41,35 @@ function hslToHex(h, s, l) {
 }
 
 export class Converter {
-    IsString(txt) {
+    static IsString(txt) {
         return typeof txt == "string";
     }
 
-    IsNumber(txt) {
+    static IsNumber(txt) {
         return typeof txt == "number";
     }
 
-    IsBoolean(txt) {
+    static IsBoolean(txt) {
         return typeof txt == "boolean";
     }
 
-    CountItems(arr: []) {
+    static CountItems(arr: []) {
         return arr.length;
     }
 
-    RBG(col: string) {
-        return col.substring(4);
+    static RGB(col: string) {
+        return '#' + col.substring(4);
     }
 
-    RBGA(col: string) {
-        return col.substring(4) + col.substring(2, 2);
+    static RGBA(col: string) {
+        return '#' + col.substring(4) + col.substring(2, 4);
     }
 
-    Alpha(col: string) {
-        return col.substring(2);
+    static Alpha(col: string) {
+        return col.substring(2,2);
     }
 
-    Iluminate(input: string, deviation: number, low = '#FFFFFF', high = '#000000') {
+    static Iluminate(input: string, deviation: number, low = '#FFFFFF', high = '#000000') {
         deviation = Math.max(-1, Math.min(1, deviation)); // Clamp deviation to [-1, 1]
 
         let inputHSL = hexToHSL(input);
@@ -90,23 +90,28 @@ export class Converter {
         return hslToHex(inputHSL.h, inputHSL.s, adjustedL);
     }
 
-    Darker(input, deviation: number) {
+    static Darker(input, deviation: number) {
         return this.Iluminate(input, deviation);
     }
 
-    Lighter(input, deviation: number) {
+    static Lighter(input, deviation: number) {
         return this.Iluminate(input, -1 * deviation);
     }
 
-    Bounds(input: number, min: number, max: number) {
+    static Bounds(input: number, min: number, max: number) {
         return Math.min(Math.max(input, min), max);
     }
 
-    Min(input: number, min: number) {
+    static Min(input: number, min: number) {
         return Math.min(input, min);
     }
 
-    Max(input: number, max: number) {
+    static Max(input: number, max: number) {
         return Math.min(input, max);
+    }
+
+    static FormatPattern(value: string, patter: string) {
+        //TODO...
+        return value;
     }
 }

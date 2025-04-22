@@ -1,0 +1,8 @@
+    {
+        "schemaVersion": "1.0.0",
+        "services": {
+            "propertyService": [
+                "./dist/designer/SvgHmiPropertiesService.js"
+            ]
+        }
+    }

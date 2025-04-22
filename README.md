@@ -19,3 +19,7 @@ this will then create a npm package via github action.
 
 http://wtt.vanse.de/2021/10/27/svghmi-dateien-erstellen/
 https://www.youtube.com/watch?v=EHxW9MD5r2Q (https://iqagent.sharefile.com/share/view/sf11d94e0d00248f39b375b6ea2897e62)
+
+# more infos
+
+https://support.industry.siemens.com/cs/mdm/109813308?c=160642938123&lc=de-DE

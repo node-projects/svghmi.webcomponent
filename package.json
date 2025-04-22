@@ -23,6 +23,7 @@
   },
   "customElements": "custom-elements.json",
   "devDependencies": {
+    "@node-projects/web-component-designer": "^0.1.253",
     "@web/dev-server": "^0.4.6",
     "release-it": "^19.0.1",
     "typescript": "^5.8.3"

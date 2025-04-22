@@ -18,6 +18,10 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
 
     private _mutationObserver: MutationObserver;
 
+    public _svgHmiProperties: Map<string, { name: string, type: string, default: string }> = new Map();
+    public _svgHmiLocalDefs: Map<string, { name: string, type: string, value: string }> = new Map();
+    private _boundAttributes: { element: Element, attribute: string, value: string }[] = [];
+
     #src: string;
     set src(value: string) {
         if (this.#src !== value) {
@@ -35,6 +39,7 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
 
         this._mutationObserver = new MutationObserver(mutations => {
             this._parseAttributesToProperties();
+            this._evaluateSvgBindings();
         });
     }
 
@@ -61,16 +66,27 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
             const svgNode = doc.children[0];
             const propertiesNode = doc.getElementsByTagNameNS("http://svg.siemens.com/hmi/", "self");
 
-            for (const n of propertiesNode) {
-                let nm = n.getAttribute('name').toLocaleLowerCase();
-                Object.defineProperty(this, nm, {
+            for (const n of propertiesNode[0].children) {
+                if (n.localName != "paramDef")
+                    continue;
+
+                let name = n.getAttribute('name');
+                let nm = name.toLocaleLowerCase(); //TODO, lowercase Name should be snake cased!
+                let tp = n.getAttribute('type');
+                let d = n.getAttribute('default');
+                this._svgHmiProperties.set(nm, { name: name, type: tp, default: d });
+
+                let val = this.getAttribute(nm);
+                this['__' + name] = val ?? d;
+
+                Object.defineProperty(this, name, {
                     get() {
-                        return this['_' + nm];
+                        return this['__' + name];
                     },
                     set(newValue) {
-                        if (this['__' + nm] !== newValue) {
-                            this['__' + nm] = newValue;
-                            this._parseSvgBindings();
+                        if (this['__' + name] !== newValue) {
+                            this['__' + name] = newValue;
+                            this._evaluateSvgBindings();
                         }
                     },
                     enumerable: true,
@@ -78,36 +94,62 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
                 });
             }
 
+            const localDefsNode = doc.getElementsByTagNameNS("http://svg.siemens.com/hmi/", "localDef");
+            for (const n of localDefsNode) {
+                let name = n.getAttribute('name');
+                let tp = n.getAttribute('type');
+                let v = n.getAttribute('value');
+                this._svgHmiLocalDefs.set(name, { name: name, type: tp, value: v });
+            }
 
             const allElements = doc.getElementsByTagName("*");
-            let boundAttributes = [];
             for (const element of allElements) {
                 for (const attr of element.attributes) {
                     if (attr.namespaceURI === "http://svg.siemens.com/hmi/bind/") {
-                        boundAttributes.push({
-                            element: element.tagName,
+                        //if (element.localName == 'localDef')
+                        //    continue;
+                        let val = attr.value;
+                        if (val.startsWith("{{"))
+                            val = val.substring(2, val.length - 2)
+                        this._boundAttributes.push({
+                            element: element,
                             attribute: attr.localName,
-                            value: attr.value
+                            value: val
                         });
                     }
                 }
             }
 
+
+            this._evaluateSvgBindings();
             this.shadowRoot.appendChild(svgNode);
-
-
-            evalWithContext("and(true, false)")
-            this._parseAttributesToProperties();
-            debugger;
         }
     }
 
+    private parseValue(value: string, type: string) {
+        switch (type) {
+            case "HmiColor": {
+
+            }
+        }
+
+        return value;
+    }
     protected override _parseAttributesToProperties(noBindings?: boolean): void {
         super._parseAttributesToProperties();
     }
 
-    _parseSvgBindings() {
-
+    _evaluateSvgBindings() {
+        for (let b of this._boundAttributes) {
+            if (b.element.localName == "localDef") {
+                this._svgHmiLocalDefs.get(b.element.getAttribute('name')).value = evalWithContext(this, b.value);
+            } else {
+                const val = evalWithContext(this, b.value);
+                b.element.setAttribute(b.attribute, val);
+                if (b.element instanceof SVGElement)
+                    b.element.style[b.attribute] = val;
+            }
+        }
     }
 }
 customElements.define("node-projects-svghmi", SvgHmi);

@@ -13,7 +13,7 @@
      height="185.71428"
      width="185.71432">
 	<hmi:self type="widget" displayName="Testing" name="extended.Testing" version="1.0" performanceClass="L">
-		<hmi:paramDef name="FarbeKreis" type="HmiColor"  default="0xFF000000"  />
+		<hmi:paramDef name="FarbeKreis" type="HmiColor"  default="0xFFaabbcc"  />
 		<hmi:paramDef name="FarbeRechteck" type="HmiColor"  default="0xFF000000"  />
 	</hmi:self>
 	<defs
