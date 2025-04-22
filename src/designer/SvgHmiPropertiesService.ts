@@ -11,11 +11,16 @@ export default class SvgHmiPropertiesService extends AbstractPolymerLikeProperti
   }
 
   public override async getProperties(designItem: IDesignItem): Promise<IProperty[] | IPropertyGroup[]> {
-    return Array.from((<SvgHmi>designItem.element)._svgHmiProperties.entries().map(x => ({
+    return [{
+      name: 'src',
+      type: 'string',
+      service: this,
+      propertyType: PropertyType.propertyAndAttribute
+    }, ...(<SvgHmi>designItem.element)._svgHmiProperties.entries().map(x => ({
       name: x[1].name,
       type: x[1].type,
       service: this,
       propertyType: PropertyType.propertyAndAttribute
-    })));
+    }))];
   }
 }
