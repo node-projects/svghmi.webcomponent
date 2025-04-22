@@ -24,10 +24,10 @@
   "customElements": "custom-elements.json",
   "devDependencies": {
     "@web/dev-server": "^0.4.6",
-    "release-it": "^18.1.2",
-    "typescript": "^5.7.3"
+    "release-it": "^19.0.1",
+    "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@node-projects/base-custom-webcomponent": "^0.29.0"
+    "@node-projects/base-custom-webcomponent": "^0.30.0"
   }
 }
