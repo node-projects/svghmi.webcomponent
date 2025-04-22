@@ -126,7 +126,7 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
         }
     }
 
-    private parseValue(value: string, type: string) {
+    /*private parseValue(value: string, type: string) {
         switch (type) {
             case "HmiColor": {
 
@@ -134,7 +134,8 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
         }
 
         return value;
-    }
+    }*/
+   
     protected override _parseAttributesToProperties(noBindings?: boolean): void {
         super._parseAttributesToProperties();
     }
