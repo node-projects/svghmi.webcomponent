@@ -42,7 +42,18 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
         this._restoreCachedInititalValues();
 
         this._mutationObserver = new MutationObserver(mutations => {
-            this._parseAttributesToProperties();
+            for (let m of mutations) {
+                if (m.type == 'attributes') {
+                    if (m.attributeName == 'src')
+                        this.src = this.getAttribute('src');
+                    else {
+                        const prp = this._svgHmiProperties.get(m.attributeName);
+                        if (prp != null) {
+                            this['__' + prp.name] = this.getAttribute(m.attributeName);
+                        }
+                    }
+                }
+            }
             this._evaluateSvgBindings();
         });
     }

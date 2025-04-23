@@ -1,6 +1,6 @@
 {
   "name": "@node-projects/svghmi.webcomponent",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "a svghmi webcomponent.",
   "type": "module",
   "main": "./dist/index.js",
