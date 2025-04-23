@@ -72,7 +72,10 @@ export class Converter {
     static Iluminate(input: string, deviation: number, low = '#FFFFFF', high = '#000000') {
         deviation = Math.max(-1, Math.min(1, deviation)); // Clamp deviation to [-1, 1]
 
-        let inputHSL = hexToHSL(input);
+        let hex = input;
+        if (hex.startsWith("0x"))
+            hex = hex.substring(4);
+        let inputHSL = hexToHSL(hex);
         let lowHSL = hexToHSL(low);
         let highHSL = hexToHSL(high);
 
