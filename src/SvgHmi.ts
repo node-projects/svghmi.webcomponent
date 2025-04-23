@@ -94,6 +94,11 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
                 let val = this.getAttribute(nm);
                 this['__' + name] = val ?? d;
 
+                if (this[name]) {
+                    this['__' + name] = this[name];
+                    delete this[name];
+                }
+                
                 Object.defineProperty(this, name, {
                     get() {
                         return this['__' + name];
