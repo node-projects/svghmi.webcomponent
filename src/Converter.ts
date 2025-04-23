@@ -1,4 +1,6 @@
 function hexToHSL(hex) {
+    if (hex.startsWith('#'))
+        hex = hex.substring(1);
     let r = parseInt(hex.substr(1, 2), 16) / 255;
     let g = parseInt(hex.substr(3, 2), 16) / 255;
     let b = parseInt(hex.substr(5, 2), 16) / 255;
@@ -58,10 +60,14 @@ export class Converter {
     }
 
     static RGB(col: string) {
+        if (col.startsWith('#'))
+            return col;
         return '#' + col.substring(4);
     }
 
     static RGBA(col: string) {
+        if (col.startsWith('#'))
+            return col;
         return '#' + col.substring(4) + col.substring(2, 4);
     }
 
