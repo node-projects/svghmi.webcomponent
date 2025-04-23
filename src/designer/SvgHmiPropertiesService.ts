@@ -18,6 +18,8 @@ export default class SvgHmiPropertiesService extends AbstractPolymerLikeProperti
       propertyType: PropertyType.propertyAndAttribute
     }, ...(<SvgHmi>designItem.element)._svgHmiProperties.entries().map(x => ({
       name: x[1].name,
+      propertyName: x[1].name,
+      attributeName: x[0],
       type: x[1].type,
       service: this,
       propertyType: PropertyType.propertyAndAttribute

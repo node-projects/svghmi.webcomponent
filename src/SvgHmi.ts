@@ -8,6 +8,10 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
             display: block;
             height: 100%;
             width: 100%;
+        }
+        svg {
+            width: 100%;
+            height: 100%;
         }`;
 
     public static override readonly template = html``;
