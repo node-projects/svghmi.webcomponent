@@ -1,5 +1,8 @@
 import { BaseCustomWebComponentConstructorAppend, css, html } from "@node-projects/base-custom-webcomponent";
+import { HmiColorValue } from "./Converter.js";
 import { evalWithContext } from "./EvalWithContext.js";
+
+type SvgHmiPropertyDefinition = { name: string, type: string, default: unknown };
 
 export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
     [key: string]: unknown;
@@ -23,8 +26,8 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
 
     private _mutationObserver: MutationObserver;
 
-    public _svgHmiProperties: Map<string, { name: string, type: string, default: string }> = new Map();
-    public _svgHmiLocalDefs: Map<string, { name: string, type: string, value: string }> = new Map();
+    public _svgHmiProperties: Map<string, SvgHmiPropertyDefinition> = new Map();
+    public _svgHmiLocalDefs: Map<string, { name: string, type: string, value: unknown }> = new Map();
     private _boundAttributes: { element: Element, elementParent?: Element, attribute: string, value: string }[] = [];
 
     #src = "";
@@ -55,7 +58,7 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
                     else {
                         const prp = this._svgHmiProperties.get(attributeName);
                         if (prp != null) {
-                            this['__' + prp.name] = this.getAttribute(attributeName);
+                            this['__' + prp.name] = SvgHmi.parseValue(this.getAttribute(attributeName), prp.type);
                         }
                     }
                 }
@@ -102,14 +105,14 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
                     continue;
                 let nm = SvgHmi.camelToDashCase(name);
                 let tp = n.getAttribute('type') ?? "";
-                let d = n.getAttribute('default') ?? "";
+                let d = SvgHmi.parseValue(n.getAttribute('default') ?? "", tp);
                 this._svgHmiProperties.set(nm, { name: name, type: tp, default: d });
 
                 let val = this.getAttribute(nm);
-                this['__' + name] = val ?? d;
+                this['__' + name] = val == null ? d : SvgHmi.parseValue(val, tp);
 
                 if (this[name]) {
-                    this['__' + name] = this[name];
+                    this['__' + name] = SvgHmi.parseValue(this[name], tp);
                     delete this[name];
                 }
                 
@@ -118,8 +121,9 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
                         return this['__' + name];
                     },
                     set(newValue) {
-                        if (this['__' + name] !== newValue) {
-                            this['__' + name] = newValue;
+                        const parsedValue = SvgHmi.parseValue(newValue, tp);
+                        if (this['__' + name] !== parsedValue) {
+                            this['__' + name] = parsedValue;
                             this._evaluateSvgBindings();
                         }
                     },
@@ -134,7 +138,7 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
                 if (name == null)
                     continue;
                 let tp = n.getAttribute('type') ?? "";
-                let v = n.getAttribute('value') ?? "";
+                let v = SvgHmi.parseValue(n.getAttribute('value') ?? "", tp);
                 this._svgHmiLocalDefs.set(name, { name: name, type: tp, value: v });
             }
 
@@ -166,15 +170,38 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
         return text[0].toLowerCase() + text.substring(1).replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`);
     }
 
-    /*private parseValue(value: string, type: string) {
-        switch (type) {
-            case "HmiColor": {
+    public static hmiColorToSvgColor(value: string) {
+        const match = /^0x([0-9a-f]{2})([0-9a-f]{6})$/i.exec(value.trim());
+        if (match == null)
+            return value;
 
-            }
+        return `#${match[2]}${match[1]}`;
+    }
+
+    private static parseValue(value: unknown, type: string) {
+        if (value == null)
+            return value;
+
+        switch (type) {
+            case "number":
+                return typeof value == "number" ? value : Number(value);
+            case "boolean":
+                return typeof value == "boolean" ? value : String(value).toLowerCase() == "true";
+            case "string":
+                return String(value);
+            case "HmiColor":
+                return value instanceof HmiColorValue ? value : new HmiColorValue(String(value));
         }
 
         return value;
-    }*/
+    }
+
+    private static formatBindingValue(value: unknown) {
+        if (value instanceof HmiColorValue)
+            return SvgHmi.hmiColorToSvgColor(value.toString());
+
+        return String(value ?? "");
+    }
 
     protected override _parseAttributesToProperties(noBindings?: boolean): void {
         super._parseAttributesToProperties();
@@ -186,17 +213,17 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
                 const name = b.element.getAttribute('name');
                 const localDef = name == null ? undefined : this._svgHmiLocalDefs.get(name);
                 if (localDef != null)
-                    localDef.value = String(evalWithContext(this, b.value) ?? "");
+                    localDef.value = SvgHmi.parseValue(evalWithContext(this, b.value), localDef.type);
             } else if (b.element.localName == "text" && b.element.namespaceURI == "http://svg.siemens.com/hmi/") {
                 const par = b.elementParent ?? b.element.parentNode;
                 if (par instanceof Element) {
                     b.elementParent = par;
-                    par.textContent = String(evalWithContext(this, b.value) ?? "");
+                    par.textContent = SvgHmi.formatBindingValue(evalWithContext(this, b.value));
                 }
                 //this._svgHmiLocalDefs.get(b.element.getAttribute('name')).value = evalWithContext(this, b.value);
             } else {
                 const val = evalWithContext(this, b.value);
-                b.element.setAttribute(b.attribute, String(val ?? ""));
+                b.element.setAttribute(b.attribute, SvgHmi.formatBindingValue(val));
                 //if (b.element instanceof SVGElement)
                 //    b.element.style[b.attribute] = val;
             }

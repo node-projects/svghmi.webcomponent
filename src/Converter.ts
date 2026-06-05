@@ -1,9 +1,70 @@
-function hexToHSL(hex: string) {
-    if (hex.startsWith('#'))
-        hex = hex.substring(1);
-    let r = parseInt(hex.substr(1, 2), 16) / 255;
-    let g = parseInt(hex.substr(3, 2), 16) / 255;
-    let b = parseInt(hex.substr(5, 2), 16) / 255;
+type ParsedHmiColor = {
+    alpha: string;
+    red: string;
+    green: string;
+    blue: string;
+    format: "hmi" | "css";
+};
+
+export class HmiColorValue extends String {
+}
+
+type HmiColorInput = string | String;
+
+function parseHmiColor(col: HmiColorInput): ParsedHmiColor | undefined {
+    const value = col.toString().trim();
+    const hmiMatch = /^0x([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(value);
+    if (hmiMatch != null) {
+        return {
+            alpha: hmiMatch[1],
+            red: hmiMatch[2],
+            green: hmiMatch[3],
+            blue: hmiMatch[4],
+            format: "hmi"
+        };
+    }
+
+    const cssMatch = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})?$/i.exec(value);
+    if (cssMatch != null) {
+        return {
+            alpha: cssMatch[4] ?? "FF",
+            red: cssMatch[1],
+            green: cssMatch[2],
+            blue: cssMatch[3],
+            format: "css"
+        };
+    }
+
+    return undefined;
+}
+
+function hmiColorToCssColor(col: HmiColorInput) {
+    const parsedColor = parseHmiColor(col);
+    if (parsedColor == null)
+        return col;
+    return `#${parsedColor.red}${parsedColor.green}${parsedColor.blue}${parsedColor.alpha}`;
+}
+
+function hmiColorToRgbColor(col: HmiColorInput) {
+    const parsedColor = parseHmiColor(col);
+    if (parsedColor == null)
+        return col;
+    return `#${parsedColor.red}${parsedColor.green}${parsedColor.blue}`;
+}
+
+function hmiColorToAlpha(col: HmiColorInput) {
+    const parsedColor = parseHmiColor(col);
+    if (parsedColor == null)
+        return "";
+    return parsedColor.alpha;
+}
+
+function colorToHSL(hex: HmiColorInput) {
+    const parsedColor = parseHmiColor(hex);
+    const value = hex.toString().replace(/^#/, "");
+    const r = parseInt(parsedColor?.red ?? value.substring(0, 2), 16) / 255;
+    const g = parseInt(parsedColor?.green ?? value.substring(2, 4), 16) / 255;
+    const b = parseInt(parsedColor?.blue ?? value.substring(4, 6), 16) / 255;
 
     let max = Math.max(r, g, b), min = Math.min(r, g, b);
     let h = 0;
@@ -25,7 +86,7 @@ function hexToHSL(hex: string) {
     return { h, s, l };
 }
 
-function hslToHex(h: number, s: number, l: number) {
+function hslToRgbHex(h: number, s: number, l: number) {
     function f(p: number, q: number, t: number) {
         if (t < 0) t += 1;
         if (t > 1) t -= 1;
@@ -42,6 +103,18 @@ function hslToHex(h: number, s: number, l: number) {
     let b = Math.round(f(p, q, h - 1 / 3) * 255);
 
     return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+}
+
+function formatIlluminatedColor(input: HmiColorInput, rgbHex: string) {
+    const parsedColor = parseHmiColor(input);
+    if (parsedColor == null)
+        return rgbHex;
+
+    const rgb = rgbHex.substring(1);
+    if (parsedColor.format == "hmi")
+        return new HmiColorValue(`0x${parsedColor.alpha}${rgb}`);
+
+    return `#${rgb}${parsedColor.alpha}`;
 }
 
 export class Converter {
@@ -61,31 +134,24 @@ export class Converter {
         return arr.length;
     }
 
-    static RGB(col: string) {
-        if (col.startsWith('#'))
-            return col;
-        return '#' + col.substring(4);
+    static RGB(col: HmiColorInput) {
+        return hmiColorToRgbColor(col);
     }
 
-    static RGBA(col: string) {
-        if (col.startsWith('#'))
-            return col;
-        return '#' + col.substring(4) + col.substring(2, 4);
+    static RGBA(col: HmiColorInput) {
+        return hmiColorToCssColor(col);
     }
 
-    static Alpha(col: string) {
-        return col.substring(2, 4);
+    static Alpha(col: HmiColorInput) {
+        return hmiColorToAlpha(col);
     }
 
-    static Iluminate(input: string, deviation: number, low = '#FFFFFF', high = '#000000') {
+    static Iluminate(input: HmiColorInput, deviation: number, low: HmiColorInput = '#FFFFFF', high: HmiColorInput = '#000000') {
         deviation = Math.max(-1, Math.min(1, deviation)); // Clamp deviation to [-1, 1]
 
-        let hex = input;
-        if (hex.startsWith("0x"))
-            hex = hex.substring(4);
-        let inputHSL = hexToHSL(hex);
-        let lowHSL = hexToHSL(low);
-        let highHSL = hexToHSL(high);
+        let inputHSL = colorToHSL(input);
+        let lowHSL = colorToHSL(low);
+        let highHSL = colorToHSL(high);
 
         let lowFactor = lowHSL.l;
         let highFactor = highHSL.l;
@@ -98,14 +164,14 @@ export class Converter {
         let adjustedL = inputHSL.l + deviation * (highFactor - lowFactor);
         adjustedL = Math.max(0, Math.min(1, adjustedL)); // Clamp L between 0 and 1
 
-        return hslToHex(inputHSL.h, inputHSL.s, adjustedL);
+        return formatIlluminatedColor(input, hslToRgbHex(inputHSL.h, inputHSL.s, adjustedL));
     }
 
-    static Darker(input: string, deviation: number) {
+    static Darker(input: HmiColorInput, deviation: number) {
         return this.Iluminate(input, deviation);
     }
 
-    static Lighter(input: string, deviation: number) {
+    static Lighter(input: HmiColorInput, deviation: number) {
         return this.Iluminate(input, -1 * deviation);
     }
 
