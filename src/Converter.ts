@@ -42,7 +42,7 @@ function hmiColorToCssColor(col: HmiColorInput) {
     const parsedColor = parseHmiColor(col);
     if (parsedColor == null)
         return col;
-    return `#${parsedColor.red}${parsedColor.green}${parsedColor.blue}${parsedColor.alpha}`;
+    return `rgba(${parseInt(parsedColor.red, 16)}, ${parseInt(parsedColor.green, 16)}, ${parseInt(parsedColor.blue, 16)}, ${parseInt(parsedColor.alpha, 16) / 255})`;
 }
 
 function hmiColorToRgbColor(col: HmiColorInput) {
@@ -161,7 +161,8 @@ export class Converter {
             highFactor = 0.0; // Assume black foreground
         }
 
-        let adjustedL = inputHSL.l + deviation * (highFactor - lowFactor);
+        const targetFactor = deviation < 0 ? lowFactor : highFactor;
+        let adjustedL = inputHSL.l + Math.abs(deviation) * (targetFactor - inputHSL.l);
         adjustedL = Math.max(0, Math.min(1, adjustedL)); // Clamp L between 0 and 1
 
         return formatIlluminatedColor(input, hslToRgbHex(inputHSL.h, inputHSL.s, adjustedL));

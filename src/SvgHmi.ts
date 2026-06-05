@@ -1,5 +1,5 @@
 import { BaseCustomWebComponentConstructorAppend, css, html } from "@node-projects/base-custom-webcomponent";
-import { HmiColorValue } from "./Converter.js";
+import { Converter, HmiColorValue } from "./Converter.js";
 import { evalWithContext } from "./EvalWithContext.js";
 
 type SvgHmiPropertyDefinition = { name: string, type: string, default: unknown };
@@ -171,11 +171,7 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
     }
 
     public static hmiColorToSvgColor(value: string) {
-        const match = /^0x([0-9a-f]{2})([0-9a-f]{6})$/i.exec(value.trim());
-        if (match == null)
-            return value;
-
-        return `#${match[2]}${match[1]}`;
+        return Converter.RGBA(value).toString();
     }
 
     private static parseValue(value: unknown, type: string) {
