@@ -146,7 +146,7 @@ export class Converter {
         return hmiColorToAlpha(col);
     }
 
-    static Iluminate(input: HmiColorInput, deviation: number, low: HmiColorInput = '#FFFFFF', high: HmiColorInput = '#000000') {
+    static Illuminate(input: HmiColorInput, deviation: number, low: HmiColorInput = '#FFFFFF', high: HmiColorInput = '#000000') {
         deviation = Math.max(-1, Math.min(1, deviation)); // Clamp deviation to [-1, 1]
 
         let inputHSL = colorToHSL(input);
@@ -169,11 +169,11 @@ export class Converter {
     }
 
     static Darker(input: HmiColorInput, deviation: number) {
-        return this.Iluminate(input, deviation);
+        return this.Illuminate(input, deviation);
     }
 
     static Lighter(input: HmiColorInput, deviation: number) {
-        return this.Iluminate(input, -1 * deviation);
+        return this.Illuminate(input, -1 * deviation);
     }
 
     static Bounds(input: number, min: number, max: number) {
@@ -185,10 +185,10 @@ export class Converter {
     }
 
     static Max(input: number, max: number) {
-        return Math.min(input, max);
+        return Math.max(input, max);
     }
 
-    static FormatPattern(value: string, patter: string) {
+    static FormatPattern(value: string, pattern: string) {
         //TODO...
         return value;
     }
