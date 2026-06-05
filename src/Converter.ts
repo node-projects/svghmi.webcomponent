@@ -1,4 +1,4 @@
-function hexToHSL(hex) {
+function hexToHSL(hex: string) {
     if (hex.startsWith('#'))
         hex = hex.substring(1);
     let r = parseInt(hex.substr(1, 2), 16) / 255;
@@ -6,7 +6,9 @@ function hexToHSL(hex) {
     let b = parseInt(hex.substr(5, 2), 16) / 255;
 
     let max = Math.max(r, g, b), min = Math.min(r, g, b);
-    let h, s, l = (max + min) / 2;
+    let h = 0;
+    let s = 0;
+    let l = (max + min) / 2;
 
     if (max === min) {
         h = s = 0;
@@ -23,8 +25,8 @@ function hexToHSL(hex) {
     return { h, s, l };
 }
 
-function hslToHex(h, s, l) {
-    function f(p, q, t) {
+function hslToHex(h: number, s: number, l: number) {
+    function f(p: number, q: number, t: number) {
         if (t < 0) t += 1;
         if (t > 1) t -= 1;
         if (t < 1 / 6) return p + (q - p) * 6 * t;
@@ -43,19 +45,19 @@ function hslToHex(h, s, l) {
 }
 
 export class Converter {
-    static IsString(txt) {
+    static IsString(txt: unknown) {
         return typeof txt == "string";
     }
 
-    static IsNumber(txt) {
+    static IsNumber(txt: unknown) {
         return typeof txt == "number";
     }
 
-    static IsBoolean(txt) {
+    static IsBoolean(txt: unknown) {
         return typeof txt == "boolean";
     }
 
-    static CountItems(arr: []) {
+    static CountItems(arr: unknown[]) {
         return arr.length;
     }
 
@@ -99,11 +101,11 @@ export class Converter {
         return hslToHex(inputHSL.h, inputHSL.s, adjustedL);
     }
 
-    static Darker(input, deviation: number) {
+    static Darker(input: string, deviation: number) {
         return this.Iluminate(input, deviation);
     }
 
-    static Lighter(input, deviation: number) {
+    static Lighter(input: string, deviation: number) {
         return this.Iluminate(input, -1 * deviation);
     }
 

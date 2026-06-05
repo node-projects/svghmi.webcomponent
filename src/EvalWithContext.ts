@@ -3,17 +3,19 @@ import { gt as gtImp, ge as geImp, lt as ltImp, le as leImp, eq as eqImp, ne as 
 import { and as andImp, or as orImp, not as notImp } from "./Logic.js";
 import { SvgHmi } from "./SvgHmi.js";
 
+type EvalProperties = Record<string, unknown>;
+
 export function evalWithContext(svgHmi: SvgHmi, code: string) {
     try {
         //@ts-ignore
         var Converter = ConverterImp;
 
-        var ParamProps = {};
+        var ParamProps: EvalProperties = {};
         for (let p of svgHmi._svgHmiProperties.entries()) {
             ParamProps[p[1].name] = svgHmi[p[1].name] ?? p[1].default;
         }
 
-        var LocalProps = {};
+        var LocalProps: EvalProperties = {};
         for (let p of svgHmi._svgHmiLocalDefs.entries()) {
             LocalProps[p[1].name] = p[1].value;
         }
@@ -73,9 +75,9 @@ export function evalWithContext(svgHmi: SvgHmi, code: string) {
         //@ts-ignore
         var ceil = Math.ceil;
         //@ts-ignore
-        var rad2deg = x => x * 180 / Math.PI;
+        var rad2deg = (x: number) => x * 180 / Math.PI;
         //@ts-ignore
-        var deg2rad = x => x * Math.PI / 180;
+        var deg2rad = (x: number) => x * Math.PI / 180;
 
 
         return eval(code);

@@ -22,11 +22,12 @@
   },
   "customElements": "custom-elements.json",
   "devDependencies": {
-    "@node-projects/web-component-designer": "^0.1.255",
+    "@node-projects/web-component-designer": "^0.2.27",
+    "@types/node": "^25.9.1",
     "@web/dev-server": "^0.4.6",
-    "typescript": "^5.8.3"
+    "typescript": "^6.0.3"
   },
   "dependencies": {
-    "@node-projects/base-custom-webcomponent": "^0.30.0"
+    "@node-projects/base-custom-webcomponent": "^0.46.0"
   }
 }

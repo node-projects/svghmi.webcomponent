@@ -2,6 +2,7 @@ import { BaseCustomWebComponentConstructorAppend, css, html } from "@node-projec
 import { evalWithContext } from "./EvalWithContext.js";
 
 export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
+    [key: string]: unknown;
 
     public static override readonly style = css`
         :host {
@@ -26,8 +27,9 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
     public _svgHmiLocalDefs: Map<string, { name: string, type: string, value: string }> = new Map();
     private _boundAttributes: { element: Element, elementParent?: Element, attribute: string, value: string }[] = [];
 
-    #src: string;
-    set src(value: string) {
+    #src = "";
+    set src(value: string | null) {
+        value ??= "";
         if (this.#src !== value) {
             this.#src = value;
             this._reloadSvg();
@@ -44,12 +46,16 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
         this._mutationObserver = new MutationObserver(mutations => {
             for (let m of mutations) {
                 if (m.type == 'attributes') {
-                    if (m.attributeName == 'src')
+                    const attributeName = m.attributeName;
+                    if (attributeName == null)
+                        continue;
+
+                    if (attributeName == 'src')
                         this.src = this.getAttribute('src');
                     else {
-                        const prp = this._svgHmiProperties.get(m.attributeName);
+                        const prp = this._svgHmiProperties.get(attributeName);
                         if (prp != null) {
-                            this['__' + prp.name] = this.getAttribute(m.attributeName);
+                            this['__' + prp.name] = this.getAttribute(attributeName);
                         }
                     }
                 }
@@ -64,13 +70,15 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
     }
 
     private async _reloadSvg() {
-        this.shadowRoot.innerHTML = "";
+        if (!this.#src)
+            return;
+        this.shadowRoot!.innerHTML = "";
         const data = await (await fetch(this.#src)).text()
         this._parseSvg(data);
     }
 
     private _parseSvg(xml: string) {
-        this.shadowRoot.innerHTML = "";
+        this.shadowRoot!.innerHTML = "";
 
         const parser = new DOMParser();
         const doc = parser.parseFromString(xml, "application/xml");
@@ -81,14 +89,20 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
             const svgNode = doc.children[0];
             const propertiesNode = doc.getElementsByTagNameNS("http://svg.siemens.com/hmi/", "self");
 
-            for (const n of propertiesNode[0].children) {
+            const selfNode = propertiesNode[0];
+            if (selfNode == null)
+                return;
+
+            for (const n of selfNode.children) {
                 if (n.localName != "paramDef")
                     continue;
 
                 let name = n.getAttribute('name');
+                if (name == null)
+                    continue;
                 let nm = SvgHmi.camelToDashCase(name);
-                let tp = n.getAttribute('type');
-                let d = n.getAttribute('default');
+                let tp = n.getAttribute('type') ?? "";
+                let d = n.getAttribute('default') ?? "";
                 this._svgHmiProperties.set(nm, { name: name, type: tp, default: d });
 
                 let val = this.getAttribute(nm);
@@ -117,8 +131,10 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
             const localDefsNode = doc.getElementsByTagNameNS("http://svg.siemens.com/hmi/", "localDef");
             for (const n of localDefsNode) {
                 let name = n.getAttribute('name');
-                let tp = n.getAttribute('type');
-                let v = n.getAttribute('value');
+                if (name == null)
+                    continue;
+                let tp = n.getAttribute('type') ?? "";
+                let v = n.getAttribute('value') ?? "";
                 this._svgHmiLocalDefs.set(name, { name: name, type: tp, value: v });
             }
 
@@ -142,7 +158,7 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
 
 
             this._evaluateSvgBindings();
-            this.shadowRoot.appendChild(svgNode);
+            this.shadowRoot!.appendChild(svgNode);
         }
     }
 
@@ -167,15 +183,20 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
     _evaluateSvgBindings() {
         for (let b of this._boundAttributes) {
             if (b.element.localName == "localDef") {
-                this._svgHmiLocalDefs.get(b.element.getAttribute('name')).value = evalWithContext(this, b.value);
+                const name = b.element.getAttribute('name');
+                const localDef = name == null ? undefined : this._svgHmiLocalDefs.get(name);
+                if (localDef != null)
+                    localDef.value = String(evalWithContext(this, b.value) ?? "");
             } else if (b.element.localName == "text" && b.element.namespaceURI == "http://svg.siemens.com/hmi/") {
                 const par = b.elementParent ?? b.element.parentNode;
-                b.elementParent = <Element>par;
-                par.textContent = evalWithContext(this, b.value);
+                if (par instanceof Element) {
+                    b.elementParent = par;
+                    par.textContent = String(evalWithContext(this, b.value) ?? "");
+                }
                 //this._svgHmiLocalDefs.get(b.element.getAttribute('name')).value = evalWithContext(this, b.value);
             } else {
                 const val = evalWithContext(this, b.value);
-                b.element.setAttribute(b.attribute, val);
+                b.element.setAttribute(b.attribute, String(val ?? ""));
                 //if (b.element instanceof SVGElement)
                 //    b.element.style[b.attribute] = val;
             }
