@@ -188,8 +188,40 @@ export class Converter {
         return Math.max(input, max);
     }
 
-    static FormatPattern(value: string, pattern: string) {
-        //TODO...
-        return value;
+    static FormatPattern(value: unknown, pattern: string) {
+        const numberValue = Number(value);
+        if (Number.isNaN(numberValue))
+            return String(value ?? "");
+
+        const formatMatch = /[0#,.]+/.exec(pattern);
+        if (formatMatch == null)
+            return String(value ?? "");
+
+        const format = formatMatch[0];
+        const decimalIndex = format.indexOf(".");
+        const integerPattern = decimalIndex === -1 ? format : format.substring(0, decimalIndex);
+        const fractionPattern = decimalIndex === -1 ? "" : format.substring(decimalIndex + 1);
+        const useThousandsSeparator = integerPattern.includes(",");
+        const integerDigits = integerPattern.replace(/,/g, "");
+        const minimumIntegerDigits = [...integerDigits].filter(x => x === "0").length;
+        const maximumFractionDigits = fractionPattern.length;
+        const minimumFractionDigits = [...fractionPattern].filter(x => x === "0").length;
+
+        const fixedValue = Math.abs(numberValue).toFixed(maximumFractionDigits);
+        let [integerPart, fractionPart = ""] = fixedValue.split(".");
+        integerPart = integerPart.padStart(minimumIntegerDigits, "0");
+
+        if (useThousandsSeparator)
+            integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+        if (fractionPart.length > minimumFractionDigits)
+            fractionPart = fractionPart.replace(/0+$/g, "");
+
+        while (fractionPart.length < minimumFractionDigits)
+            fractionPart += "0";
+
+        const sign = numberValue < 0 ? "-" : "";
+        const formattedValue = sign + integerPart + (fractionPart ? "." + fractionPart : "");
+        return pattern.substring(0, formatMatch.index) + formattedValue + pattern.substring(formatMatch.index + format.length);
     }
 }
