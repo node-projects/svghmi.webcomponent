@@ -58,7 +58,7 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
                     else {
                         const prp = this._svgHmiProperties.get(attributeName);
                         if (prp != null) {
-                            this['__' + prp.name] = SvgHmi.parseValue(this.getAttribute(attributeName), prp.type);
+                            this['__' + prp.name] = this._readPropertyAttribute(attributeName, prp.type, prp.default);
                         }
                     }
                 }
@@ -108,10 +108,9 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
                 let d = SvgHmi.parseValue(n.getAttribute('default') ?? "", tp);
                 this._svgHmiProperties.set(nm, { name: name, type: tp, default: d });
 
-                let val = this.getAttribute(nm);
-                this['__' + name] = val == null ? d : SvgHmi.parseValue(val, tp);
+                this['__' + name] = this._readPropertyAttribute(nm, tp, d);
 
-                if (this[name]) {
+                if (Object.prototype.hasOwnProperty.call(this, name)) {
                     this['__' + name] = SvgHmi.parseValue(this[name], tp);
                     delete this[name];
                 }
@@ -166,6 +165,13 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
         }
     }
 
+    private _readPropertyAttribute(attributeName: string, type: string, defaultValue: unknown) {
+        if (this.hasAttribute(attributeName))
+            return SvgHmi.parseValue(this.getAttribute(attributeName) ?? "", type);
+
+        return defaultValue;
+    }
+
     public static camelToDashCase(text: string) {
         return text[0].toLowerCase() + text.substring(1).replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`);
     }
@@ -182,7 +188,7 @@ export class SvgHmi extends BaseCustomWebComponentConstructorAppend {
             case "number":
                 return typeof value == "number" ? value : Number(value);
             case "boolean":
-                return typeof value == "boolean" ? value : String(value).toLowerCase() == "true";
+                return typeof value == "boolean" ? value : value === "" || String(value).toLowerCase() == "true";
             case "string":
                 return String(value);
             case "HmiColor":
